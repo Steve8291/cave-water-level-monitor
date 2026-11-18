@@ -26,7 +26,7 @@ function sendCommand(cmd) {
     }
 }
 
-// 以上一改
+    // 以上一改
 
 
 // 1. 按钮高亮切换与硬件控制逻辑 / Toggle active button state & trigger hardware action
@@ -48,6 +48,8 @@ function toggleLED(buttonNumber) {
 // 2. 页面加载完成后绑定弹窗与确认交互 / Bind modal open/close & confirmation handlers on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     initWebSocket();//一改
+
+
     // 点击带有 data-dialog 的按钮时打开对应弹窗 / Open matching modal when a [data-dialog] button is clicked
     const dialogButtons = document.querySelectorAll('button[data-dialog]');
     dialogButtons.forEach(button => {
@@ -93,6 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 点击 "YES" 执行基准水位归零校准 / Execute base water level recalibration on "YES"
     if (btnYes) {
         btnYes.addEventListener('click', () => {
+            sendCommand('CALIBRATE_ZERO');
+            //一改
+
             // 可在此处向设备发送校准指令（例如 fetch('/calibrate')） / Send recalibrate command to device here
             console.log('Recalibrating Water Base Level...');
             
