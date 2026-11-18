@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cave Logger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" sizes="114x114" href="" />
+    <link rel="apple-touch-icon" sizes="144x144" href="" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- 模拟手机竖屏居中容器 / Portrait mobile-first container -->
+    <main class="phone-container">
+        
+        <!-- 顶部：主标题 + Last Data 遥测数据卡片 / Top Section: Title + Last Data Telemetry Card -->
+        <section class="top-section">
+            <header class="app-header">
+                <span class="badge">TELEMETRY MONITOR</span>
+                <h1>Cave Logger</h1>
+            </header>
+
+            <div class="status-card">
+                <div class="status-header">
+                    <span class="status-title">Last Data</span>
+                    <!-- 在线状态指示绿点 / Live status indicator dot -->
+                    <span class="live-dot"></span>
+                </div>
+                <div class="status-time" id="last-time">Nov 9 12:40 PM</div>
+                <div class="status-metric">
+                    <svg class="water-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                    </svg>
+                    <span class="metric-label">Water:</span>
+                    <span class="metric-value" id="last-water">142.5 <small>cm</small></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 中下部：三个纵向排列的主操作按钮 / Lower Section: Vertically stacked primary action buttons -->
+        <section class="button-stack">
+            <!-- 按钮 1：导入数据 / Button 1: Import Data -->
+            <button class="button active" id="button1" data-dialog="dialog-import" onclick="toggleLED(1)">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Import Data</span>
+            </button>
+
+            <!-- 按钮 2：查看图表 / Button 2: View Graph -->
+            <button class="button" id="button2" data-dialog="dialog-graphs" onclick="toggleLED(2)">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span>View Graph</span>
+            </button>
+
+            <!-- 按钮 3：校准基准水位 / Button 3: Calibrate Water Base Level -->
+            <button class="button" id="button3" data-dialog="dialog-calibrate" onclick="toggleLED(3)">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>Calibrate</span>
+            </button>
+        </section>
+    </main>
+
+    <!-- 弹窗 1：导入数据并从监测设备清除 / Modal 1: Import data to phone & delete from device -->
+    <dialog id="dialog-import" class="modal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <h2>Import Data</h2>
+            </div>
+            <button class="close-btn" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Imports data to phone then deletes from monitoring device.</p>
+            <button class="action-confirm-btn" id="btn-confirm-import">Transfer & Clear Device</button>
+        </div>
+    </dialog>
+
+    <!-- 弹窗 2：选择手机上的任意数据进行图表查看 / Modal 2: Select saved phone data to view as a graph -->
+    <dialog id="dialog-graphs" class="modal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <h2>View Graph</h2>
+            </div>
+            <button class="close-btn" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Select any saved log on the phone to view as a graph:</p>
+            <select class="log-select" id="log-selector">
+                <option value="nov9">Nov 9, 2026 — Cave Entrance (142.5 cm)</option>
+                <option value="nov2">Nov 2, 2026 — Lower Chamber (138.0 cm)</option>
+                <option value="oct25">Oct 25, 2026 — Baseline Log (120.2 cm)</option>
+            </select>
+            <div class="graph-placeholder">
+                <span>Water Level Trend Chart Area</span>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- 弹窗 3：Calibrate 高危警告弹窗 / Modal 3: Calibration Warning Popup Window -->
+    <dialog id="dialog-calibrate" class="modal warning-modal">
+        <div class="warning-body">
+            <div class="warning-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h2 class="warning-title">WARNING</h2>
+            <p class="warning-text">
+                This will cause all previously collected data to be inaccurate.
+            </p>
+            <p class="warning-question">
+                Recalibrate Water Base Level?
+            </p>
+            <!-- 底部双确认按钮 / Dual confirmation buttons (No / YES) -->
+            <div class="warning-actions">
+                <button class="btn-no" id="calibrate-no">No</button>
+                <button class="btn-yes" id="calibrate-yes">YES</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
